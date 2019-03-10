@@ -20,7 +20,7 @@
         <param name="camera_frame_id" value="raspicam"/>
     </node>
 
-    <node pkg="asl_turtlebot" type="camera_relay.py" name="camera_relay"/>
+    <node pkg="avg_turtlebot" type="camera_relay.py" name="camera_relay"/>
 
     <node pkg="gmapping" type="slam_gmapping" name="turtlebot3_slam_gmapping" output="screen">
         <param name="base_frame" value="base_footprint"/>
@@ -56,7 +56,7 @@
         <param name="lasamplestep" value="0.005"/>
     </node>
 
-    <node pkg="asl_turtlebot" type="detector_mobilenet.py" name="turtlebot_detector" respawn="true"/>
+    <node pkg="avg_turtlebot" type="detector_mobilenet.py" name="turtlebot_detector" respawn="true"/>
 
     <!-- x: -180, y: -90 -->
     <node pkg="tf" type="static_transform_publisher" name="camera_true_broadcaster" args="0.03 0 0.067 0.707107 0 0.707107 0 base_footprint raspicam 100" />
