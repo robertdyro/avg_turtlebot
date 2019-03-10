@@ -80,7 +80,6 @@ class Supervisor:
         if rviz:
             rospy.Subscriber('/move_base_simple/goal', PoseStamped, self.rviz_goal_callback)
 	       
-
 	#food detector
 	#list of all detectable objects 
 	#object_list = load_object_labels(PATH_TO_LABELS)
@@ -90,8 +89,6 @@ class Supervisor:
 	for element in food_list:
 		rospy.Subscriber('/detector/'+element, DetectedObject, self.food_detected_callback)
 
-
-
     def food_detected_callback(self, msg):
 	#this is a food localization part
 	#we need to create a seperate function for picking up food
@@ -100,8 +97,6 @@ class Supervisor:
 	inter_yg = self.y - 0.1*dist*np.sin(msg.thetaright) + 0.2
 	inter_thg = self.theta
 	self.food_location[msg.name].append(inter_xg, inter_yg, inter_thg) #just in case we have multiple detection 
-
-    
 
     def gazebo_callback(self, msg):
         pose = msg.pose[msg.name.index("turtlebot3_burger")]
