@@ -10,6 +10,9 @@ import math
 import numpy as np
 from enum import Enum
 
+#path to object lables
+PATH_TO_LABELS = os.path.join(os.path.dirname(os.path.realpath(__file__)), '../tfmodels/coco_labels.txt')
+
 # if sim is True/using gazebo, therefore want to subscribe to /gazebo/model_states\
 # otherwise, they will use a TF lookup (hw2+)
 use_gazebo = rospy.get_param("sim")
@@ -78,6 +81,27 @@ class Supervisor:
             rospy.Subscriber('/move_base_simple/goal', PoseStamped, self.rviz_goal_callback)
 	       
 
+	#food detector
+	#list of all detectable objects 
+	#object_list = load_object_labels(PATH_TO_LABELS)
+	#food list has to be updated with a comprehensive list provided by ASL people i think. This is just an example
+	food_list = ['orange', 'pizza', 'cake', 'donut', 'fruit', 'salad']
+	self.food_location = {}
+	for element in food_list:
+		rospy.Subscriber('/detector/'+element, DetectedObject, self.food_detected_callback)
+
+
+
+    def food_detected_callback(self, msg):
+	#this is a food localization part
+	#we need to create a seperate function for picking up food
+	#print(msg.name+" detected")
+	inter_xg = self.x + 0.1*dist*np.cos(msg.thetaleft) #0.1 for dm
+	inter_yg = self.y - 0.1*dist*np.sin(msg.thetaright) + 0.2
+	inter_thg = self.theta
+	self.food_location[msg.name].append(inter_xg, inter_yg, inter_thg) #just in case we have multiple detection 
+
+    
 
     def gazebo_callback(self, msg):
         pose = msg.pose[msg.name.index("turtlebot3_burger")]
