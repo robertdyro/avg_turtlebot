@@ -1,0 +1,10 @@
+ <launch>
+    <rosparam param="sim">false</rosparam>
+    <rosparam param="map">false</rosparam>
+    <rosparam param="use_tf">false</rosparam>
+    <rosparam param="rviz">true</rosparam>
+
+    <node pkg="avg_turtlebot" type="hw2_demo.py" name="turtlebot_pose_commander" />
+    <node pkg="avg_turtlebot" type="pose_controller.py" name="turtlebot_pose_controller" />
+
+</launch>
