@@ -7,7 +7,7 @@ from tf import TransformListener
 import tensorflow as tf
 import numpy as np
 from sensor_msgs.msg import CompressedImage, Image, CameraInfo, LaserScan
-from asl_turtlebot.msg import DetectedObject, DetectedObjectList
+from avg_turtlebot.msg import DetectedObject, DetectedObjectList
 from cv_bridge import CvBridge, CvBridgeError
 import cv2
 import math
@@ -159,28 +159,23 @@ class Detector:
         """ estimates the distance of an object in between two angles
         using lidar measurements """
 
-        offset = int(np.pi/self.laser_angle_increment)
-        # add offset and wrap to number of points. laserscan should always have the same number of points. (2*offset = len(ranges))
-        # See https://github.com/StanfordASL/velodyne/blob/master/velodyne_laserscan/src/VelodyneLaserScan.cpp#L110
-        leftray_indx = (offset + min(max(0, int(thetaleft/self.laser_angle_increment)), offset * 2)) % (offset * 2)
-        rightray_indx = (offset + min(max(0, int(thetaright/self.laser_angle_increment)), offset * 2)) % (offset * 2)
+        leftray_indx = min(max(0,int(thetaleft/self.laser_angle_increment)),len(ranges))
+        rightray_indx = min(max(0,int(thetaright/self.laser_angle_increment)),len(ranges))
 
         if leftray_indx<rightray_indx:
             meas = ranges[rightray_indx:] + ranges[:leftray_indx]
         else:
             meas = ranges[rightray_indx:leftray_indx]
 
-        num_m = 0
-        dists = []
+        num_m, dist = 0, 0
         for m in meas:
             if m>0 and m<float('Inf'):
-                dists.append(m)
+                dist += m
                 num_m += 1
+        if num_m>0:
+            dist /= num_m
 
-        dists = np.sort(np.array(dists))
-        m = min(10, num_m)
-        return np.mean(dists[:m])
-
+        return dist
 
     def camera_callback(self, msg):
         """ callback for camera images """

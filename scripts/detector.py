@@ -7,7 +7,7 @@ from tf import TransformListener
 import tensorflow as tf
 import numpy as np
 from sensor_msgs.msg import Image, CameraInfo, LaserScan
-from asl_turtlebot.msg import DetectedObject
+from avg_turtlebot.msg import DetectedObject
 from cv_bridge import CvBridge, CvBridgeError
 import cv2
 import math
@@ -139,12 +139,13 @@ class Detector:
         """ takes in a pixel coordinate (u,v) and returns a tuple (x,y,z)
         that is a unit vector in the direction of the pixel, in the camera frame """
 
-        x = (u - self.cx)/self.fx
-        y = (v - self.cy)/self.fy
-        norm = math.sqrt(x*x + y*y + 1)
-        x /= norm
-        y /= norm
-        z = 1.0 / norm
+        ### YOUR CODE HERE ###
+
+        x = 1 # CHANGE ME
+        y = 0 # CHANGE ME
+        z = 0 # CHANGE ME
+
+        ### END OF YOUR CODE ###
 
         return (x,y,z)
 
@@ -238,10 +239,14 @@ class Detector:
         cx, cy are the center of the image in pixel (the principal point), fx and fy are
         the focal lengths. """
 
-        self.cx = msg.P[2]
-        self.cy = msg.P[6]
-        self.fx = msg.P[0]
-        self.fy = msg.P[5]
+        ### YOUR CODE HERE ###
+
+        self.cx = 0 # CHANGE ME
+        self.cy = 0 # CHANGE ME
+        self.fx = 1 # CHANGE ME
+        self.fy = 1 # CHANGE ME
+
+        ### END OF YOUR CODE ###
 
     def laser_callback(self, msg):
         """ callback for thr laser rangefinder """
