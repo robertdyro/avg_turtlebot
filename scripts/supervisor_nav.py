@@ -9,6 +9,7 @@ from geometry_msgs.msg import Twist, PoseArray, Pose2D, PoseStamped
 from avg_turtlebot.msg import DetectedObject
 import tf
 import math
+import numpy as np
 from enum import Enum
 
 #path to object lables
@@ -79,8 +80,10 @@ class Supervisor:
         rospy.Subscriber('/move_base_simple/goal', PoseStamped, self.rviz_goal_callback)
 
         #food detector
-        #list of all foods to detect        
-        food_list = ['apple','banana','orange','broccoli','carrot','hot dog', 'pizza', 'cake', 'donut', 'fruit', 'salad','vegetable','food-other']
+        #list of all foods to detect
+        food_list = ['apple','banana','orange','broccoli','carrot', 'pizza', 'cake', 'donut', 'fruit', 'salad','vegetable']        
+        # can't detect spaces in name like hot dog
+        # food_list = ['apple','banana','orange','broccoli','carrot','hot dog', 'pizza', 'cake', 'donut', 'fruit', 'salad','vegetable','food-other']
         self.food_location = {}
         for element in food_list:
             rospy.Subscriber('/detector/'+element, DetectedObject, self.food_detected_callback)
@@ -92,15 +95,25 @@ class Supervisor:
         #this is a food localization part
         #we need to create a seperate function for picking up food
         #print(msg.name+" detected")
+        rospy.loginfo("Detected: %s", msg.name)
+        dist = msg.distance
         food_xg = self.x + 0.1*dist*np.cos(msg.thetaleft) #0.1 for dm
         food_yg = self.y - 0.1*dist*np.sin(msg.thetaright)
         food_thg = self.theta
+        food_xg = round(food_xg,2)
+        food_yg = round(food_yg,2)
+        food_thg = round(food_thg,2)
         if msg.name in self.food_location:
-            self.food_location[msg.name].append([food_xg, food_yg, food_thg])
+            food_coord = [food_xg, food_yg, food_thg]
+            if food_coord in self.food_location[msg.name]:
+                rospy.loginfo("Previously detected %s at this position so not adding to dictionary", msg.name)
+            else:
+                rospy.loginfo("Adding %s location to dictionary", msg.name)
+                self.food_location[msg.name].append(food_coord)
         else:
             self.food_location[msg.name] = [[food_xg, food_yg, food_thg]]
         food_detected_dict = String()
-        food_detected_dict.data = json.dumps(food_location)
+        food_detected_dict.data = json.dumps(self.food_location)
         self.food_detected_publisher.publish(food_detected_dict)
         # food_location = {'pizza': [[12.0, 2.0, 3.0], [2.0, 0.0, 1.0]], 'apple': [[1.0, 2.4, 0.3], [1.0, 2.4, 0.3]], 'banana': [[12.0, 2.0, 3.0]]}
 
