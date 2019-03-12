@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import rospy
+import os
 from gazebo_msgs.msg import ModelStates
 from std_msgs.msg import Float32MultiArray, String
 from geometry_msgs.msg import Twist, PoseArray, Pose2D, PoseStamped
@@ -77,9 +78,7 @@ class Supervisor:
         rospy.Subscriber('/move_base_simple/goal', PoseStamped, self.rviz_goal_callback)
 
         #food detector
-        #list of all detectable objects 
-        #object_list = load_object_labels(PATH_TO_LABELS)
-        #food list has to be updated with a comprehensive list provided by ASL people i think. This is just an example
+        #list of all foods to detect        
         food_list = ['apple','banana','orange','broccoli','carrot','hot dog', 'pizza', 'cake', 'donut', 'fruit', 'salad','vegetable','food-other']
         self.food_location = {}
         for element in food_list:
@@ -89,21 +88,20 @@ class Supervisor:
 
 
     def food_detected_callback(self, msg):
-    #this is a food localization part
-    #we need to create a seperate function for picking up food
-    #print(msg.name+" detected")
-    inter_xg = self.x + 0.1*dist*np.cos(msg.thetaleft) #0.1 for dm
-    inter_yg = self.y - 0.1*dist*np.sin(msg.thetaright) + 0.2
-    inter_thg = self.theta
-    if msg.name in self.food_location:
-        self.food_location[msg.name].append([inter_xg, inter_yg, inter_thg])
-    else:
-        self.food_location[msg.name] = [[inter_xg, inter_yg, inter_thg]]
-    food_detected_dict = String()
-    food_detected_dict.data = str(food_location)
-    self.food_detected_publisher.publish(food_detected_dict)
-    # self.food_location[msg.name].append(inter_xg, inter_yg, inter_thg) #just in case we have multiple detection 
-    # food_location = {'pizza': [[12.0, 2.0, 3.0], [2.0, 0.0, 1.0]], 'apple': [[1.0, 2.4, 0.3], [1.0, 2.4, 0.3]], 'banana': [[12.0, 2.0, 3.0]]}
+        #this is a food localization part
+        #we need to create a seperate function for picking up food
+        #print(msg.name+" detected")
+        food_xg = self.x + 0.1*dist*np.cos(msg.thetaleft) #0.1 for dm
+        food_yg = self.y - 0.1*dist*np.sin(msg.thetaright)
+        food_thg = self.theta
+        if msg.name in self.food_location:
+            self.food_location[msg.name].append([food_xg, food_yg, food_thg])
+        else:
+            self.food_location[msg.name] = [[food_xg, food_yg, food_thg]]
+        food_detected_dict = String()
+        food_detected_dict.data = str(food_location)
+        self.food_detected_publisher.publish(food_detected_dict)
+        # food_location = {'pizza': [[12.0, 2.0, 3.0], [2.0, 0.0, 1.0]], 'apple': [[1.0, 2.4, 0.3], [1.0, 2.4, 0.3]], 'banana': [[12.0, 2.0, 3.0]]}
 
 
 
