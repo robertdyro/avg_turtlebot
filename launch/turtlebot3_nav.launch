@@ -39,5 +39,7 @@
   <node pkg="avg_turtlebot" type="supervisor.py" name="turtlebot_supervisor" output="screen"/>
   <node pkg="avg_turtlebot" type="pose_controller.py" name="turtlebot_pose_controller" />
   <node pkg="avg_turtlebot" type="navigator.py" name="turtlebot_navigator" />
+  <node pkg="avg_turtlebot" type="waypoints.py" name="turtlebot_waypoints" />
+
   <!--<node pkg="avg_turtlebot" type="detector.py" name="turtlebot_detector" />-->
 </launch>

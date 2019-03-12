@@ -22,13 +22,13 @@ POS_EPS = .1
 THETA_EPS = .3
 
 # time to stop at a stop sign
-STOP_TIME = 10
+STOP_TIME = 3
 
 # minimum distance from a stop sign to obey it
 STOP_MIN_DIST = .5
 
 # time taken to cross an intersection
-CROSSING_TIME = 3
+CROSSING_TIME = 5
 
 # state machine modes, not all implemented
 class Mode(Enum):
@@ -72,7 +72,7 @@ class Supervisor:
             rospy.Subscriber('/gazebo/model_states', ModelStates, self.gazebo_callback)
         # we can subscribe to nav goal click
         rospy.Subscriber('/move_base_simple/goal', PoseStamped, self.rviz_goal_callback)
-        
+
     def gazebo_callback(self, msg):
         pose = msg.pose[msg.name.index("turtlebot3_burger")]
         twist = msg.twist[msg.name.index("turtlebot3_burger")]
@@ -91,7 +91,7 @@ class Supervisor:
         origin_frame = "/map" if mapping else "/odom"
         print("rviz command received!")
         try:
-            
+
             nav_pose_origin = self.trans_listener.transformPose(origin_frame, msg)
             self.x_g = nav_pose_origin.pose.position.x
             self.y_g = nav_pose_origin.pose.position.y
@@ -164,7 +164,7 @@ class Supervisor:
         """ checks if stop sign maneuver is over """
 
         return (self.mode == Mode.STOP and (rospy.get_rostime()-self.stop_sign_start)>rospy.Duration.from_sec(STOP_TIME))
-        
+
     def init_crossing(self):
         """ initiates an intersection crossing maneuver """
 
