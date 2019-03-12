@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 
 import numpy as np
-import matplotlib.pyplot as plt
-import matplotlib.patches as patches
+#import matplotlib.pyplot as plt
+#import matplotlib.patches as patches
 
 # Represents a motion planning problem to be solved using A*
 class AStar(object):
@@ -135,16 +135,26 @@ class AStar(object):
           if x == self.x_goal:
             self.path = self.reconstruct_path()
             return True
-          xn_list = self.get_neighbors(x)
-          for xn in xn_list:
-            if xn not in self.closed_set and xn not in self.open_set:
-              self.g_score[xn] = self.g_score[x] + self.distance(xn, x)
-              self.f_score[xn] = self.g_score[xn] + self.distance(xn,
-                  self.x_goal)
-              self.open_set.append(xn)
-              self.came_from[xn] = x
+
           self.closed_set.append(x)
           self.open_set.remove(x)
+
+          xn_list = self.get_neighbors(x)
+          for xn in xn_list:
+            if xn not in self.closed_set:
+              g_score = self.g_score[x] + self.distance(xn, x)
+
+              if xn not in self.open_set:
+                self.open_set.append(xn)
+                self.came_from[xn] = x
+                self.g_score[xn] = g_score
+                self.f_score[xn] = self.g_score[xn] + self.distance(xn, 
+                    self.x_goal)
+              elif g_score <= self.g_score[xn]:
+                self.came_from[xn] = x
+                self.g_score[xn] = g_score
+                self.f_score[xn] = self.g_score[xn] + self.distance(xn, 
+                    self.x_goal)
         return False
 
 # A 2D state space grid with a set of rectangular obstacles. The grid is fully deterministic
@@ -212,6 +222,7 @@ if not astar.solve():
     exit(0)
 
 astar.plot_path()
+
 
 
 plt.savefig("astar.png", dpi=300)
