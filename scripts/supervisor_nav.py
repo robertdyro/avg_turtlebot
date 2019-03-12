@@ -2,6 +2,7 @@
 
 import rospy
 import os
+import json
 from gazebo_msgs.msg import ModelStates
 from std_msgs.msg import Float32MultiArray, String
 from geometry_msgs.msg import Twist, PoseArray, Pose2D, PoseStamped
@@ -99,7 +100,7 @@ class Supervisor:
         else:
             self.food_location[msg.name] = [[food_xg, food_yg, food_thg]]
         food_detected_dict = String()
-        food_detected_dict.data = str(food_location)
+        food_detected_dict.data = json.dumps(food_location)
         self.food_detected_publisher.publish(food_detected_dict)
         # food_location = {'pizza': [[12.0, 2.0, 3.0], [2.0, 0.0, 1.0]], 'apple': [[1.0, 2.4, 0.3], [1.0, 2.4, 0.3]], 'banana': [[12.0, 2.0, 3.0]]}
 

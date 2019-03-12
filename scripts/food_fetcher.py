@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import rospy
 import copy
+import json
 from tf.broadcaster import TransformBroadcaster
 from gazebo_msgs.msg import ModelStates
 from geometry_msgs.msg import Twist, Pose2D, Point
@@ -31,6 +32,7 @@ class FoodFetcher:
         rospy.Subscriber('/food_detected', String ,self.food_detected_callback)
         # waypoints for robot in real world if initialized at (0,0,0)
         
+        # self.food_dictionary = {'pizza': [[12.0, 2.0, 3.0], [2.0, 0.0, 1.0]], 'apple': [[1.0, 2.4, 0.3], [1.0, 2.4, 0.3]], 'banana': [[12.0, 2.0, 3.0]]}
         self.food_dictionary = {}
         self.food_waypoints = []
 
@@ -59,12 +61,13 @@ class FoodFetcher:
                 else:
                     print("Did not detect the requested item ",fd, ":(")
             print("Requested food are at coordinates ",self.food_waypoints)
-        return
+        
 
     def food_detected_callback(self, msg):
-        self.food_dictionary = eval(msg.data)
+        print("data_received", msg.data)
+        self.food_dictionary.update(json.loads(msg.data))
         print("Dictionary of food just detected is ",self.food_dictionary)
-        return
+        
 
     def gazebo_callback(self, data):
         if "turtlebot3_burger" in data.name:
@@ -104,14 +107,18 @@ class FoodFetcher:
         rate1 = rospy.Rate(.1)
         fetch_flag = True
         K = 0
-        food_waypoint = self.food_waypoints[K,:]
+        while not fetch_flag or not self.food_waypoints:
+            pass
+        food_waypoint = self.food_waypoints[K]
         pose_waypoint_msg = Pose2D()
         pose_waypoint_msg.x = food_waypoint[0]
         pose_waypoint_msg.y = food_waypoint[1]
         pose_waypoint_msg.theta = food_waypoint[2]
+        print "publishing waypoint 0"
         self.food_waypoint_publisher.publish(pose_waypoint_msg)
+        print "publishing waypoint 0"
         K = 1
-        while not explor_flag and not rospy.is_shutdown():
+        while not fetch_flag and not rospy.is_shutdown():
             self.food_waypoint_publisher.publish(pose_waypoint_msg)
             self.get_current_location()
             food_waypoint = self.food_waypoints[K,:]
