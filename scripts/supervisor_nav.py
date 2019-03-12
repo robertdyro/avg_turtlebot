@@ -80,11 +80,15 @@ class Supervisor:
 
         #food detector
         #list of all foods to detect        
-        food_list = ['apple','banana','orange','broccoli','carrot','hot dog', 'pizza', 'cake', 'donut', 'fruit', 'salad','vegetable','food-other']
+        food_list = ['apple','banana','orange','broccoli','carrot','hot dog',
+            'pizza', 'cake', 'donut', 'fruit',
+            'salad','vegetable','food-other']
         self.food_location = {}
         for element in food_list:
-            rospy.Subscriber('/detector/'+element, DetectedObject, self.food_detected_callback)
-        self.food_detected_publisher = rospy.Publisher('/food_detected', String, queue_size=10)
+            rospy.Subscriber('/detector/'+element.replace(" ", "_"),
+                DetectedObject, self.food_detected_callback)
+        self.food_detected_publisher = rospy.Publisher('/food_detected',
+            String, queue_size=10)
 
 
 
