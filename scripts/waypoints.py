@@ -45,7 +45,6 @@ class waypoints:
         self.waypoints = waypoints
         self.waypoints[:,0] = self.waypoints[:,0] - 0.05
         self.waypoints[:,2] = wrapToPi(self.waypoints[:,2])
-        import pdb; pdb.set_trace()
         # self.waypoints = np.zeros_like(waypoints)
         # self.waypoints[:,1] = 0.6858 + 0.325 - waypoints[:,1]
         # self.waypoints[:,0] = 3.55 - waypoints[:,0]
