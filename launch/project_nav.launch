@@ -7,7 +7,7 @@
   <!-- <node pkg="avg_turtlebot" type="cmd_nav_commander.py" name="cmd_nav_commander" /> -->
 
   <node pkg="avg_turtlebot" type="supervisor_nav.py" name="turtlebot_supervisor_nav" output="screen"/>
-  <node pkg="avg_turtlebot" type="detector.py" name="turtlebot_detector" output="screen"/>
+  <!--<node pkg="avg_turtlebot" type="detector.py" name="turtlebot_detector" output="screen"/>-->
   <node pkg="avg_turtlebot" type="pose_controller_nav.py" name="turtlebot_pose_controller_nav" />
   <node pkg="avg_turtlebot" type="navigator.py" name="turtlebot_navigator" />
   <node pkg="avg_turtlebot" type="rviz_marker.py" name="turtlebot_rviz_marker" />

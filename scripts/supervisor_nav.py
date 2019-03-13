@@ -54,6 +54,8 @@ print "mapping = %s\n" % mapping
 class Supervisor:
 
     def __init__(self):
+        self.food_published_last = 0
+
         rospy.init_node('turtlebot_supervisor_nav', anonymous=True)
         # initialize variables
         self.x = 0
@@ -81,6 +83,8 @@ class Supervisor:
         rospy.Subscriber('/move_base_simple/goal', PoseStamped, self.rviz_goal_callback)
 
         #food detector
+        self.food_detected_publisher = rospy.Publisher('/food_detected',
+            String, queue_size=10)
         #list of all foods to detect
         food_list = ['apple','banana','orange','broccoli','carrot', 'pizza', 'cake', 'donut', 'fruit', 'salad','vegetable']        
         # can't detect spaces in name like hot dog
@@ -93,10 +97,16 @@ class Supervisor:
         for element in food_list:
             rospy.Subscriber('/detector/'+element.replace(" ", "_"),
                 DetectedObject, self.food_detected_callback)
-        self.food_detected_publisher = rospy.Publisher('/food_detected',
-            String, queue_size=10)
 
+	rospy.Subscriber('/termination_request', String, self.terminator_callback)
+       
 
+    def terminator_callback(self, msg):
+		if msg == "Yes":
+			rospy.loginfo("Termination request received!")
+	        self.mode = Mode.IDLE()
+
+	
 
     def food_detected_callback(self, msg):
         #this is a food localization part
@@ -236,6 +246,14 @@ class Supervisor:
         mode (i.e. the finite state machine's state), if takes appropriate
         actions. This function shouldn't return anything """
 
+        if self.food_published_last % 10 == 0:
+          food_detected_dict = String()
+          food_detected_dict.data = json.dumps(self.food_location)
+          self.food_detected_publisher.publish(food_detected_dict)
+        self.food_published_last += 1
+
+
+
         if not use_gazebo:
             try:
                 origin_frame = "/map" if mapping else "/odom"
@@ -244,6 +262,7 @@ class Supervisor:
                 self.y = translation[1]
                 euler = tf.transformations.euler_from_quaternion(rotation)
                 self.theta = euler[2]
+                #rospy.loginfo("Current position %s %s %s",self.x, self.y, self.theta)
             except (tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException):
                 pass
 
