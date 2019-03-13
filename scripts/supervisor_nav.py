@@ -254,6 +254,7 @@ class Supervisor:
                 self.y = translation[1]
                 euler = tf.transformations.euler_from_quaternion(rotation)
                 self.theta = euler[2]
+                rospy.loginfo("Current position %s %s %s",self.x, self.y, self.theta)
             except (tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException):
                 pass
 
