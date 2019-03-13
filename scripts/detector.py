@@ -7,9 +7,10 @@ from tf import TransformListener
 import tensorflow as tf
 import numpy as np
 from sensor_msgs.msg import Image, CameraInfo, LaserScan
-from avg_turtlebot.msg import DetectedObject
+from asl_turtlebot.msg import DetectedObject
 from cv_bridge import CvBridge, CvBridgeError
 import cv2
+import pdb
 import math
 
 # path to the trained conv net
@@ -141,10 +142,14 @@ class Detector:
 
         ### YOUR CODE HERE ###
 
-        x = 1 # CHANGE ME
-        y = 0 # CHANGE ME
-        z = 0 # CHANGE ME
-
+        x_un = (u - self.cx) / self.fx
+        y_un = (v - self.cy) / self.fy
+        z_un = 1
+        X = np.array([x_un,y_un,z_un])
+        norm = np.sum(np.linalg.norm(X))
+        x = x_un / norm # * depth
+        y = y_un / norm # * depth
+        z = z_un / norm # * depth
         ### END OF YOUR CODE ###
 
         return (x,y,z)
@@ -241,10 +246,11 @@ class Detector:
 
         ### YOUR CODE HERE ###
 
-        self.cx = 0 # CHANGE ME
-        self.cy = 0 # CHANGE ME
-        self.fx = 1 # CHANGE ME
-        self.fy = 1 # CHANGE ME
+        self.cx = msg.K[2]
+        self.cy = msg.K[5]
+        self.fx = msg.K[0]
+        self.fy = msg.K[4]
+
 
         ### END OF YOUR CODE ###
 
