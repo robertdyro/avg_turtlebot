@@ -10,8 +10,9 @@
   <node pkg="avg_turtlebot" type="pose_controller_nav.py" name="turtlebot_pose_controller_nav" />
   <node pkg="avg_turtlebot" type="navigator.py" name="turtlebot_navigator" />
   <node pkg="avg_turtlebot" type="food_fetcher.py" name="turtlebot_food_fetcher" />
-  <node pkg="avg_turtlebot" type="request_publisher.py" name="turtlebot_request_publisher" />
+  <!--<node pkg="avg_turtlebot" type="request_publisher.py" name="turtlebot_request_publisher" />-->
   <node pkg="avg_turtlebot" type="rviz_marker.py" name="turtlebot_rviz_marker" />
   <!--<node pkg="avg_turtlebot" type="waypoints.py" name="turtlebot_waypoints" />-->
 
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find avg_turtlebot)/rviz/project2.rviz"/>
 </launch>
