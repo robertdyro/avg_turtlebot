@@ -33,7 +33,7 @@ class DetOccupancyGrid2D(object):
 
 class StochOccupancyGrid2D(object):
     def __init__(self, resolution, width, height, origin_x, origin_y,
-                window_size, probs, thresh=0.5):
+                window_size, probs, thresh=0.6):
         self.resolution = resolution
         self.width = width
         self.height = height
