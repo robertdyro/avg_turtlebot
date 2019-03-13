@@ -11,16 +11,14 @@ class TerminationRequestPublisher:
         rospy.init_node('terminator_publisher', anonymous=True)
         #create publisher
         self.request_termination = rospy.Publisher('/termination_request', String, queue_size=10)
+        self.request_termination2 = rospy.Publisher('/termination_request2', String, queue_size=10)
         self.termination_request = None
 
     def publish_request(self):
         #publish the request t times, once every s seconds
-        t = 10
-        s = 1.
-        for i in range(t):
-            self.request_termination.publish(self.request)
-            rospy.sleep(s)
-    
+        self.request_termination.publish(self.request)
+        self.request_termination2.publish(self.request)
+  
     def loop(self):
         """The main loop of the script. The script will ask for food items to add to the 
         delivery_request string until an empty answer ("") is given, at which point it will 
@@ -32,7 +30,7 @@ class TerminationRequestPublisher:
             
             #gather requests from user input
             while request_not_complete:
-                termination_decision = raw_input("Shall I be terminated? Yes/No")
+                termination_decision = raw_input("Shall I be terminated? Yes/No: ")
                 if termination_decision == "Yes":
                     request_not_complete = False
                     self.request = termination_decision

@@ -98,14 +98,16 @@ class Supervisor:
             rospy.Subscriber('/detector/'+element.replace(" ", "_"),
                 DetectedObject, self.food_detected_callback)
 
-	rospy.Subscriber('/termination_request', String, self.terminator_callback)
+        rospy.Subscriber('/termination_request', String, self.terminator_callback)
        
 
     def terminator_callback(self, msg):
-		if msg.data == "Yes":
-			rospy.loginfo("Termination request received!")
-	        self.mode = Mode.IDLE()
-
+        if msg.data == "Yes":
+            rospy.loginfo("Termination request received!")
+            self.mode = Mode.IDLE
+            self.x_g = self.x
+            self.y_g = self.y
+            self.theta_g = self.theta
 	
 
     def food_detected_callback(self, msg):

@@ -47,6 +47,14 @@ class FoodFetcher:
         self.y_g = 0.0
         self.theta_g = 0.0
 
+        rospy.Subscriber('/termination_request', String, self.terminator_callback)
+
+    def terminator_callback(self, msg):
+        if msg.data == "Yes":
+            rospy.loginfo("Food fetcher: termination request received!")
+            if self.food_waypoints:
+              self.food_waypoints.remove(self.food_waypoints[0])
+
     def delivery_request_callback(self, msg):
         allFoodsRequested = msg.data.split(',')
         print("All the foods requested are ",allFoodsRequested)
@@ -143,7 +151,7 @@ class FoodFetcher:
                 pose_waypoint_msg.x = fd_target[0]
                 pose_waypoint_msg.y = fd_target[1]
                 pose_waypoint_msg.theta = fd_target[2]
-                print("Publishing waypoint")
+                rospy.loginfo("Publishing waypoint")
                 self.food_waypoint_publisher.publish(pose_waypoint_msg)
 
                 self.get_current_location()
@@ -153,8 +161,8 @@ class FoodFetcher:
                 fd_theta = fd_target[2]
 
                 if la.norm([self.x - fd_x, self.y - fd_y]) < 0.10:
-                    print('Arrived at food waypoint')
-                    print("Publishing new waypoint")
+                    rospy.loginfo('Arrived at food waypoint')
+                    rospy.loginfo("Publishing new waypoint")
                     self.food_waypoints.remove(fd_target)
             rate.sleep()
 
