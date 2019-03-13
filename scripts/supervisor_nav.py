@@ -35,7 +35,7 @@ STOP_TIME = 3
 STOP_MIN_DIST = .5
 
 # time taken to cross an intersection
-CROSSING_TIME = 5
+CROSSING_TIME = 3
 
 # state machine modes, not all implemented
 class Mode(Enum):
