@@ -26,16 +26,16 @@ START_POS_THRESH = .2
 # thereshold in theta to start moving forward when path following
 THETA_START_THRESH = 0.09
 # P gain on orientation before start
-THETA_START_P = 0.75
+THETA_START_P = 1
 
 # maximum velocity
-V_MAX = .1
+V_MAX = .2
 
 # maximim angular velocity
-W_MAX = .2
+W_MAX = .4
 
 # desired crusing velocity
-V_DES = 0.08
+V_DES = 0.12
 
 # gains of the path follower
 KPX = .5
