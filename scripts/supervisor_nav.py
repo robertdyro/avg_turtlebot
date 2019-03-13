@@ -102,7 +102,7 @@ class Supervisor:
        
 
     def terminator_callback(self, msg):
-		if msg == "Yes":
+		if msg.data == "Yes":
 			rospy.loginfo("Termination request received!")
 	        self.mode = Mode.IDLE()
 
