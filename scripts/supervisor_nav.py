@@ -11,6 +11,7 @@ import tf
 import math
 import numpy as np
 from enum import Enum
+import numpy as np
 
 #path to object lables
 PATH_TO_LABELS = os.path.join(os.path.dirname(os.path.realpath(__file__)), '../tfmodels/coco_labels.txt')
@@ -84,10 +85,16 @@ class Supervisor:
         food_list = ['apple','banana','orange','broccoli','carrot', 'pizza', 'cake', 'donut', 'fruit', 'salad','vegetable']        
         # can't detect spaces in name like hot dog
         # food_list = ['apple','banana','orange','broccoli','carrot','hot dog', 'pizza', 'cake', 'donut', 'fruit', 'salad','vegetable','food-other']
+        #list of all foods to detect        
+        # food_list = ['apple','banana','orange','broccoli','carrot','hot dog',
+        #     'pizza', 'cake', 'donut', 'fruit',
+        #     'salad','vegetable','food-other']
         self.food_location = {}
         for element in food_list:
-            rospy.Subscriber('/detector/'+element, DetectedObject, self.food_detected_callback)
-        self.food_detected_publisher = rospy.Publisher('/food_detected', String, queue_size=10)
+            rospy.Subscriber('/detector/'+element.replace(" ", "_"),
+                DetectedObject, self.food_detected_callback)
+        self.food_detected_publisher = rospy.Publisher('/food_detected',
+            String, queue_size=10)
 
 
 
@@ -96,6 +103,7 @@ class Supervisor:
         #we need to create a seperate function for picking up food
         #print(msg.name+" detected")
         rospy.loginfo("Detected: %s", msg.name)
+
         dist = msg.distance
         food_xg = self.x + 0.1*dist*np.cos(msg.thetaleft) #0.1 for dm
         food_yg = self.y - 0.1*dist*np.sin(msg.thetaright)

@@ -11,7 +11,7 @@
   <node pkg="avg_turtlebot" type="pose_controller_nav.py" name="turtlebot_pose_controller_nav" />
   <node pkg="avg_turtlebot" type="navigator.py" name="turtlebot_navigator" />
   <node pkg="avg_turtlebot" type="rviz_marker.py" name="turtlebot_rviz_marker" />
-  <node pkg="avg_turtlebot" type="waypoints.py" name="turtlebot_waypoints" />
+  <!--<node pkg="avg_turtlebot" type="waypoints.py" name="turtlebot_waypoints" />-->
 
-  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find avg_turtlebot)/rviz/project_sim.rviz"/>
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find avg_turtlebot)/rviz/project.rviz"/>
 </launch>

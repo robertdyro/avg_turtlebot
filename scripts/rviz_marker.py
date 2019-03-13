@@ -30,7 +30,7 @@ class RViz_marker:
         self.trans_listener = tf.TransformListener()
 #        self.tfBuffer = tf2_ros.Buffer()
 #        self.tfListener = tf2_ros.TransformListener(self.tfBuffer)
-        rospy.Subscriber('/cmd_pose', Pose2D,self.cmd_pose_callback)
+        rospy.Subscriber('/nav_pose', Pose2D,self.cmd_pose_callback)
 
         # current state
         self.x = 0.0
