@@ -103,10 +103,9 @@ class FoodFetcher:
                 pass
 
     def run(self):
-        rate = rospy.Rate(.2) # 30 Hz
-        rate1 = rospy.Rate(.1)
+        rate = rospy.Rate(2) # 30 Hz
         fetch_flag = True
-        K = 0
+        """
         while not fetch_flag or not self.food_waypoints:
             pass
         food_waypoint = self.food_waypoints[K]
@@ -134,6 +133,29 @@ class FoodFetcher:
                 if K == np.shape(self.food_waypoints)[0]-1:
                     fetch_flag = False
                 K += 1
+            rate.sleep()
+         """
+
+        while not rospy.is_shutdown():
+            if fetch_flag == True and self.food_waypoints: 
+                fd_target = self.food_waypoints[0]
+                pose_waypoint_msg = Pose2D()
+                pose_waypoint_msg.x = fd_target[0]
+                pose_waypoint_msg.y = fd_target[1]
+                pose_waypoint_msg.theta = fd_target[2]
+                print("Publishing waypoint")
+                self.food_waypoint_publisher.publish(pose_waypoint_msg)
+
+                self.get_current_location()
+
+                fd_x = fd_target[0]
+                fd_y = fd_target[1]
+                fd_theta = fd_target[2]
+
+                if la.norm([self.x - fd_x, self.y - fd_y]) < 0.10:
+                    print('Arrived at food waypoint')
+                    print("Publishing new waypoint")
+                    self.food_waypoints.remove(fd_target)
             rate.sleep()
 
 
