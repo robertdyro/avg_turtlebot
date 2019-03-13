@@ -10,6 +10,7 @@ from avg_turtlebot.msg import DetectedObject
 import tf
 import math
 from enum import Enum
+import numpy as np
 
 #path to object lables
 PATH_TO_LABELS = os.path.join(os.path.dirname(os.path.realpath(__file__)), '../tfmodels/coco_labels.txt')
@@ -96,6 +97,7 @@ class Supervisor:
         #this is a food localization part
         #we need to create a seperate function for picking up food
         #print(msg.name+" detected")
+        dist = msg.distance
         food_xg = self.x + 0.1*dist*np.cos(msg.thetaleft) #0.1 for dm
         food_yg = self.y - 0.1*dist*np.sin(msg.thetaright)
         food_thg = self.theta
@@ -104,7 +106,7 @@ class Supervisor:
         else:
             self.food_location[msg.name] = [[food_xg, food_yg, food_thg]]
         food_detected_dict = String()
-        food_detected_dict.data = json.dumps(food_location)
+        food_detected_dict.data = json.dumps(self.food_location)
         self.food_detected_publisher.publish(food_detected_dict)
         # food_location = {'pizza': [[12.0, 2.0, 3.0], [2.0, 0.0, 1.0]], 'apple': [[1.0, 2.4, 0.3], [1.0, 2.4, 0.3]], 'banana': [[12.0, 2.0, 3.0]]}
 

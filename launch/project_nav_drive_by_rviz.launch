@@ -13,5 +13,5 @@
   <node pkg="avg_turtlebot" type="rviz_marker.py" name="turtlebot_rviz_marker" />
   <!--<node pkg="avg_turtlebot" type="waypoints.py" name="turtlebot_waypoints" />-->
 
-  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find avg_turtlebot)/rviz/project_sim.rviz"/>
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find avg_turtlebot)/rviz/project.rviz"/>
 </launch>
