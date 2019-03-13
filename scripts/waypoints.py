@@ -29,20 +29,23 @@ class waypoints:
         rospy.Subscriber('/cmd_pose', Pose2D,self.cmd_pose_callback)
         # waypoints for robot in real world if initialized at (0,0,0)
         waypoints = np.array([0.304800000000000,	0,	0,
-        0.304800000000000,	0.685800000000000,	-1.57079632679490,
-        1.14300000000000,	0.685800000000000,	1.57079632679490,
-        1.14300000000000,	-1.60020000000000,	1.57079632679490,
+        0.304800000000000,	0.685800000000000,	1.57079632679490,
+        1.14300000000000,	0.685800000000000,	-1.57079632679490,
+        1.14300000000000,	-1.60020000000000,	-1.57079632679490,
         1.14300000000000,	-0.457200000000000,	0,
         3.20040000000000,	-0.457200000000000,	0,
-        3.20040000000000,	0.685800000000000,	-1.57079632679490,
-        1.14300000000000,	0.685800000000000,	1.57079632679490,
+        3.20040000000000,	0.685800000000000,	1.57079632679490,
+        1.14300000000000,	0.685800000000000,	-1.57079632679490,
         1.14300000000000,	-0.457200000000000,	0,
         3.20040000000000,	-0.457200000000000,	0,
-        3.12420000000000,	-0.914400000000000,	2.09439510239320,
-        0.304800000000000,	-1.67640000000000,	-1.57079632679490])
+        3.12420000000000,	-0.914400000000000,	-2.09439510239320,
+        0.304800000000000,	-1.67640000000000,	1.57079632679490])
         # converting waypoint to simulation frame
         waypoints = np.reshape(waypoints,(3,-1),order='F').T
         self.waypoints = waypoints
+        self.waypoints[:,0] = self.waypoints[:,0] - 0.05
+        self.waypoints[:,2] = wrapToPi(self.waypoints[:,2])
+        import pdb; pdb.set_trace()
         # self.waypoints = np.zeros_like(waypoints)
         # self.waypoints[:,1] = 0.6858 + 0.325 - waypoints[:,1]
         # self.waypoints[:,0] = 3.55 - waypoints[:,0]
@@ -93,7 +96,7 @@ class waypoints:
 
     def run(self):
         rate = rospy.Rate(.2) # 30 Hz
-        rate1 = rospy.Rate(.1)
+        rate1 = rospy.Rate(.2)
         explor_flag = True
         K = 0
         waypoint = self.waypoints[K,:]
@@ -108,7 +111,6 @@ class waypoints:
             self.get_current_location()
             waypoint = self.waypoints[K,:]
             if la.norm([self.x-pose_waypoint_msg.x,self.y-pose_waypoint_msg.y])  < 0.05:
-                rate1.sleep()
                 print('arrived')
                 pose_waypoint_msg = Pose2D()
                 pose_waypoint_msg.x = waypoint[0]
