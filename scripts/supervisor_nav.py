@@ -98,7 +98,15 @@ class Supervisor:
             rospy.Subscriber('/detector/'+element.replace(" ", "_"),
                 DetectedObject, self.food_detected_callback)
 
+	rospy.Subscriber('/termination_request', String, self.terminator_callback)
+       
 
+    def terminator_callback(self, msg):
+		if msg == "Yes":
+			rospy.loginfo("Termination request received!")
+	        self.mode = Mode.IDLE()
+
+	
 
     def food_detected_callback(self, msg):
         #this is a food localization part
