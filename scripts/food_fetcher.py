@@ -35,6 +35,7 @@ class FoodFetcher:
         # self.food_dictionary = {'pizza': [[12.0, 2.0, 3.0], [2.0, 0.0, 1.0]], 'apple': [[1.0, 2.4, 0.3], [1.0, 2.4, 0.3]], 'banana': [[12.0, 2.0, 3.0]]}
         self.food_dictionary = {}
         self.food_waypoints = []
+        self.food_dictionary["home"] = [(0.3, -1.7, 1.57)]
 
 
         # current state
@@ -70,7 +71,7 @@ class FoodFetcher:
                     print("Did not detect the requested item ", fd, ":(")
 
             # BREAKING CHANGE, ADDING HOME AFTER FOOD LIST
-            self.food_waypoints.append([0.0, 0.0, 0.0])
+            # self.food_waypoints.append([0.0, 0.0, 0.0])
             # END OF BREAKING CHANGE
 
             print("Requested food are at coordinates ", self.food_waypoints)
@@ -79,6 +80,11 @@ class FoodFetcher:
     def food_detected_callback(self, msg):
         #print("data_received", msg.data)
         self.food_dictionary.update(json.loads(msg.data))
+
+        # BREAKING CHANGE, ADDING HOME AFTER FOOD LIST
+        self.food_dictionary["home"] = [(0.3, -1.7, 1.57)]
+        # END OF BREAKING CHANGE
+
         #print("Dictionary of food just detected is ",self.food_dictionary)
         
 
@@ -153,6 +159,7 @@ class FoodFetcher:
             if fetch_flag == True and self.food_waypoints: 
                 fd_target = self.food_waypoints[0]
                 pose_waypoint_msg = Pose2D()
+                print(fd_target)
                 pose_waypoint_msg.x = fd_target[0]
                 pose_waypoint_msg.y = fd_target[1]
                 pose_waypoint_msg.theta = fd_target[2]
