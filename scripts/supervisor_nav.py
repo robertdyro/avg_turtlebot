@@ -32,7 +32,7 @@ THETA_EPS = .3
 STOP_TIME = 3
 
 # minimum distance from a stop sign to obey it
-STOP_MIN_DIST = .5
+STOP_MIN_DIST = 0.70
 
 # time taken to cross an intersection
 CROSSING_TIME = 3
@@ -67,7 +67,7 @@ class Supervisor:
         # command pose for controller
         self.pose_goal_publisher = rospy.Publisher('/cmd_pose', Pose2D, queue_size=10)
         # nav pose for controller
-        self.nav_goal_publisher = rospy.Publisher('/cmd_nav', Pose2D, queue_size=10)
+        self.nav_goal_publisher = rospy.Publisher('/cmd_nav', Pose2D, queue_size=2)
         # command vel (used for idling)
         self.cmd_vel_publisher = rospy.Publisher('/cmd_vel', Twist, queue_size=10)
 
@@ -82,6 +82,7 @@ class Supervisor:
         # we can subscribe to nav goal click
         rospy.Subscriber('/move_base_simple/goal', PoseStamped, self.rviz_goal_callback)
 
+        rospy.loginfo("Supervisor_nav: Initiating food subscribers...")
         #food detector
         self.food_detected_publisher = rospy.Publisher('/food_detected',
             String, queue_size=10)
@@ -99,16 +100,25 @@ class Supervisor:
                 DetectedObject, self.food_detected_callback)
 
         rospy.Subscriber('/termination_request', String, self.terminator_callback)
+        rospy.loginfo("Supervisor_nav: Done initiating")
        
 
     def terminator_callback(self, msg):
-        if msg.data == "Yes":
-            rospy.loginfo("Termination request received!")
+        if msg.data == "y":
+            rospy.loginfo("Supervisor_nav: Termination request received!")
             self.mode = Mode.IDLE
             self.x_g = self.x
             self.y_g = self.y
             self.theta_g = self.theta
-	
+
+            nav_g_msg = Pose2D()
+            nav_g_msg.x = self.x
+            nav_g_msg.y = self.y
+            nav_g_msg.theta = self.theta
+            self.nav_goal_publisher.publish(nav_g_msg)
+
+            vel_g_msg = Twist()
+            self.cmd_vel_publisher.publish(vel_g_msg)
 
     def food_detected_callback(self, msg):
         #this is a food localization part
@@ -185,6 +195,7 @@ class Supervisor:
 
         # distance of the stop sign
         dist = msg.distance
+        rospy.loginfo("Supervisor: Stop sign at %f", dist)
 
         # if close enough and in nav mode, stop
         if dist > 0 and dist < STOP_MIN_DIST and self.mode == Mode.NAV:
@@ -197,6 +208,7 @@ class Supervisor:
         pose_g_msg.x = self.x_g
         pose_g_msg.y = self.y_g
         pose_g_msg.theta = self.theta_g
+        #rospy.loginfo("Supervisor_nav: publishing from go_to_pose, mode: %s", self.mode)
 
         self.pose_goal_publisher.publish(pose_g_msg)
 
@@ -207,6 +219,7 @@ class Supervisor:
         nav_g_msg.x = self.x_g
         nav_g_msg.y = self.y_g
         nav_g_msg.theta = self.theta_g
+        #rospy.loginfo("Supervisor_nav: publishing from nav_to_pose, mode: %s", self.mode)
 
         self.nav_goal_publisher.publish(nav_g_msg)
 

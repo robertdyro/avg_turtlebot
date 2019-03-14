@@ -50,7 +50,7 @@ class FoodFetcher:
         rospy.Subscriber('/termination_request', String, self.terminator_callback)
 
     def terminator_callback(self, msg):
-        if msg.data == "Yes":
+        if msg.data == "y":
             rospy.loginfo("Food fetcher: termination request received!")
             if self.food_waypoints:
               self.food_waypoints.remove(self.food_waypoints[0])
@@ -72,9 +72,9 @@ class FoodFetcher:
         
 
     def food_detected_callback(self, msg):
-        print("data_received", msg.data)
+        #print("data_received", msg.data)
         self.food_dictionary.update(json.loads(msg.data))
-        print("Dictionary of food just detected is ",self.food_dictionary)
+        #print("Dictionary of food just detected is ",self.food_dictionary)
         
 
     def gazebo_callback(self, data):

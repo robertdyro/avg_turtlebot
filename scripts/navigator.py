@@ -95,6 +95,7 @@ class Navigator:
         self.x_g = data.x
         self.y_g = data.y
         self.theta_g = data.theta
+        rospy.loginfo("Navigator: Received command")
         self.run_navigator()
 
     def map_md_callback(self, msg):
@@ -172,6 +173,7 @@ class Navigator:
 
             rospy.loginfo("Navigator: Computing navigation plan")
             if problem.solve():
+                rospy.loginfo("Navigator: Astar problem solved")
                 if len(problem.path) > 3:
                     # cubic spline interpolation requires 4 points
                     self.current_plan = problem.path
@@ -218,6 +220,7 @@ class Navigator:
             else:
                 rospy.logwarn("Navigator: Could not find path")
                 self.current_plan = []
+            rospy.loginfo("Navigator: Computed navigation plan")
 
         # if we have a path, execute it (we need at least 3 points for this controller)
         if len(self.current_plan) > 3:

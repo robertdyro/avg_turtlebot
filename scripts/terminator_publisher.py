@@ -2,6 +2,7 @@
 
 import rospy
 from std_msgs.msg import String
+import sys
 
 class TerminationRequestPublisher:
     """Publishes food delivery requests to the PavoneCart food delivery service. """
@@ -30,12 +31,12 @@ class TerminationRequestPublisher:
             
             #gather requests from user input
             while request_not_complete:
-                termination_decision = raw_input("Shall I be terminated? Yes/No: ")
-                if termination_decision == "Yes":
+                termination_decision = raw_input("Shall I be terminated? y/[n]: ")
+                if termination_decision == "y":
                     request_not_complete = False
                     self.request = termination_decision
                 else:
-                    print "Not a valid response"
+                    sys.exit()
 
 
             print "Termination initiated..."
