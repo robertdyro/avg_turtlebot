@@ -166,9 +166,8 @@ class Supervisor:
     def rviz_goal_callback(self, msg):
         """ callback for a pose goal sent through rviz """
         origin_frame = "/map" if mapping else "/odom"
-        print("rviz command received!")
+        rospy.loginfo("Supervisor_nav: rviz command received!")
         try:
-
             nav_pose_origin = self.trans_listener.transformPose(origin_frame, msg)
             self.x_g = nav_pose_origin.pose.position.x
             self.y_g = nav_pose_origin.pose.position.y
@@ -179,11 +178,13 @@ class Supervisor:
                     nav_pose_origin.pose.orientation.w)
             euler = tf.transformations.euler_from_quaternion(quaternion)
             self.theta_g = euler[2]
+            rospy.loginfo("Supervisor_nav: Successfully changed the goal to rviz")
         except (tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException):
             pass
         self.mode = Mode.NAV
 
     def nav_pose_callback(self, msg):
+        rospy.loginfo("Supervisor_nav: new nav command")
         self.x_g = msg.x
         self.y_g = msg.y
         self.theta_g = msg.theta
@@ -195,7 +196,7 @@ class Supervisor:
 
         # distance of the stop sign
         dist = msg.distance
-        rospy.loginfo("Supervisor: Stop sign at %f", dist)
+        rospy.loginfo("Supervisor_nav: Stop sign at %f", dist)
 
         # if close enough and in nav mode, stop
         if dist > 0 and dist < STOP_MIN_DIST and self.mode == Mode.NAV:

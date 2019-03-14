@@ -21,12 +21,12 @@ END_POS_THRESH = .2
 
 # threshold to be far enough into the plan
 # to recompute it
-START_POS_THRESH = .2
+START_POS_THRESH = 0.2
 
 # thereshold in theta to start moving forward when path following
 THETA_START_THRESH = 0.09
 # P gain on orientation before start
-THETA_START_P = 1
+THETA_START_P = 0.2
 
 # maximum velocity
 V_MAX = .2
@@ -123,6 +123,7 @@ class Navigator:
         return (self.plan_resolution*round(x[0]/self.plan_resolution), self.plan_resolution*round(x[1]/self.plan_resolution))
 
     def close_to_start_location(self):
+
         if len(self.current_plan)>0:
             snapped_current = self.snap_to_grid([self.x, self.y])
             snapped_start = self.snap_to_grid(self.current_plan_start_loc)
@@ -164,6 +165,7 @@ class Navigator:
         # or the occupancy grid has been updated, update the current plan
         if len(self.current_plan)==0 or not(self.close_to_start_location()) or self.occupancy_updated:
 
+          
             # use A* to compute new plan
             state_min = self.snap_to_grid((-self.plan_horizon, -self.plan_horizon))
             state_max = self.snap_to_grid((self.plan_horizon, self.plan_horizon))
@@ -290,11 +292,36 @@ class Navigator:
             else:
                 pose_g_msg.theta = self.theta_g
             self.nav_pose_pub.publish(pose_g_msg)
+
+            # publish plan for visualization
+            path_msg = Path()
+            path_msg.header.frame_id = 'map'
+            for state in self.current_plan:
+                pose_st = PoseStamped()
+                pose_st.pose.position.x = state[0]
+                pose_st.pose.position.y = state[1]
+                pose_st.pose.orientation.w = 1
+                pose_st.header.frame_id = 'map'
+                path_msg.poses.append(pose_st)
+            self.nav_path_pub.publish(path_msg)
+
             return
         else:
             # just stop
             cmd_x_dot = 0
             cmd_theta_dot = 0
+
+            # publish plan for visualization
+            path_msg = Path()
+            path_msg.header.frame_id = 'map'
+            for state in self.current_plan:
+                pose_st = PoseStamped()
+                pose_st.pose.position.x = state[0]
+                pose_st.pose.position.y = state[1]
+                pose_st.pose.orientation.w = 1
+                pose_st.header.frame_id = 'map'
+                path_msg.poses.append(pose_st)
+            self.nav_path_pub.publish(path_msg)
 
         # saving the last velocity for the controller
         self.V_prev = cmd_x_dot

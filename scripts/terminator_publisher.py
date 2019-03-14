@@ -12,7 +12,6 @@ class TerminationRequestPublisher:
         rospy.init_node('terminator_publisher', anonymous=True)
         #create publisher
         self.request_termination = rospy.Publisher('/termination_request', String, queue_size=10)
-        self.request_termination2 = rospy.Publisher('/termination_request2', String, queue_size=10)
         self.termination_request = None
 
     def publish_request(self):
