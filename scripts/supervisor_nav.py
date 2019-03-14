@@ -133,6 +133,10 @@ class Supervisor:
         food_xg = round(food_xg,2)
         food_yg = round(food_yg,2)
         food_thg = round(food_thg,2)
+
+        if np.any(np.isnan([food_xg, food_yg, food_thg])):
+          return
+
         if msg.name in self.food_location:
             food_coord = [food_xg, food_yg, food_thg]
             if food_coord in self.food_location[msg.name]:
