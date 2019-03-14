@@ -1,8 +1,6 @@
-#!/usr/bin/env python
-
 import numpy as np
-#import matplotlib.pyplot as plt
-#import matplotlib.patches as patches
+import matplotlib.pyplot as plt
+import matplotlib.patches as patches
 
 # Represents a motion planning problem to be solved using A*
 class AStar(object):
@@ -64,26 +62,27 @@ class AStar(object):
     # where we can move up, down, left, right, or along the diagonals by an
     # amount equal to self.resolution.
     # Use self.is_free in order to check if any given state is indeed free.
-    # Use self.snap_to_grid (see above) to ensure that the neighbors you
-    # compute are actually on the discrete grid, i.e., if you were to compute
-    # neighbors by simply adding/subtracting self.resolution from x, numerical
-    # error could creep in over the course of many additions and cause grid
-    # point equality checks to fail. To remedy this, you should make sure that
-    # every neighbor is snapped to the grid as it is computed.
+    # Use self.snap_to_grid (see above) to ensure that the neighbors you compute
+    # are actually on the discrete grid, i.e., if you were to compute neighbors by
+    # simply adding/subtracting self.resolution from x, numerical error could
+    # creep in over the course of many additions and cause grid point equality
+    # checks to fail. To remedy this, you should make sure that every neighbor is
+    # snapped to the grid as it is computed.
     # INPUT: (x)
     #           x - tuple state
     # OUTPUT: List of neighbors that are free, as a list of TUPLES
     def get_neighbors(self, x):
+        # TODO: fill me in!
         neighbors = []
-        moves = [(1, 0), (0, 1), (1, 1), (-1, 0), (0, -1), (-1, -1), (1, -1),
-            (-1, 1)]
-        for move in moves:
-          xn = self.snap_to_grid(np.array(x) + self.resolution *
-              np.array(move))
-          if xn != x and self.is_free(xn):
-            neighbors.append(xn)
+        for dx in [-self.resolution,0,self.resolution]:
+            for dy in [-self.resolution,0,self.resolution]:
+                if dx==0 and dy==0:
+                    continue
+                x_check = self.snap_to_grid((x[0]+dx,x[1]+dy))
+                if self.is_free(x_check):
+                    neighbors.append(x_check)
         return neighbors
-
+        
     # Gets the state in open_set that has the lowest f_score
     # INPUT: None
     # OUTPUT: A tuple, the state found in open_set that has the lowest f_score
@@ -93,8 +92,7 @@ class AStar(object):
     # Use the came_from map to reconstruct a path from the initial location
     # to the goal location
     # INPUT: None
-    # OUTPUT: A list of tuples, which is a list of the states that go from
-    # start to goal
+    # OUTPUT: A list of tuples, which is a list of the states that go from start to goal
     def reconstruct_path(self):
         path = [self.x_goal]
         current = path[-1]
@@ -122,6 +120,7 @@ class AStar(object):
         plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.03), fancybox=True, ncol=3)
 
         plt.axis('equal')
+        plt.show()
 
     # Solves the planning problem using the A* search algorithm. It places
     # the solution as a list of of tuples (each representing a state) that go
@@ -130,31 +129,25 @@ class AStar(object):
     # OUTPUT: Boolean, True if a solution from x_init to x_goal was found
     def solve(self):
         while len(self.open_set)>0:
-          # TODO: fill me in!
-          x = self.find_best_f_score()
-          if x == self.x_goal:
-            self.path = self.reconstruct_path()
-            return True
+            x_curr = self.find_best_f_score()
+            if x_curr == self.x_goal:
+                self.path = self.reconstruct_path()
+                return True
+            
+            self.open_set.remove(x_curr)
+            self.closed_set.append(x_curr)
+            for x_neigh in self.get_neighbors(x_curr):
+                if x_neigh in self.closed_set:
+                    continue
+                tent = self.g_score[x_curr] + self.distance(x_curr, x_neigh)
+                if x_neigh not in self.open_set:
+                    self.open_set.append(x_neigh)
+                elif tent > self.g_score[x_neigh]:
+                    continue
+                self.came_from[x_neigh] = x_curr
+                self.g_score[x_neigh] = tent
+                self.f_score[x_neigh] = tent + self.distance(self.x_goal, x_neigh)
 
-          self.closed_set.append(x)
-          self.open_set.remove(x)
-
-          xn_list = self.get_neighbors(x)
-          for xn in xn_list:
-            if xn not in self.closed_set:
-              g_score = self.g_score[x] + self.distance(xn, x)
-
-              if xn not in self.open_set:
-                self.open_set.append(xn)
-                self.came_from[xn] = x
-                self.g_score[xn] = g_score
-                self.f_score[xn] = self.g_score[xn] + self.distance(xn, 
-                    self.x_goal)
-              elif g_score <= self.g_score[xn]:
-                self.came_from[xn] = x
-                self.g_score[xn] = g_score
-                self.f_score[xn] = self.g_score[xn] + self.distance(xn, 
-                    self.x_goal)
         return False
 
 # A 2D state space grid with a set of rectangular obstacles. The grid is fully deterministic
@@ -186,15 +179,15 @@ class DetOccupancyGrid2D(object):
             obs[1][1]-obs[0][1],))
 
 ### TESTING
-
+'''
 # A simple example
-"""
 width = 10
 height = 10
 x_init = (0,0)
 x_goal = (8,8)
 obstacles = [((6,6),(8,7)),((2,1),(4,2)),((2,4),(4,6)),((6,2),(8,4))]
 occupancy = DetOccupancyGrid2D(width, height, obstacles)
+astar = AStar((0, 0), (width, height), x_init, x_goal, occupancy)
 
 # A large random example
 width = 101
@@ -215,16 +208,11 @@ while not (occupancy.is_free(x_init) and occupancy.is_free(x_goal)):
     x_init = tuple(np.random.randint(0,width-2,2).tolist())
     x_goal = tuple(np.random.randint(0,height-2,2).tolist())
 
-astar = AStar((0, 0), (width, height), x_init, x_goal, occupancy)
+astar2 = AStar((0, 0), (width, height), x_init, x_goal, occupancy)
 
 if not astar.solve():
     print "No path found"
     exit(0)
 
 astar.plot_path()
-
-
-
-plt.savefig("astar.png", dpi=300)
-plt.show()
-"""
+'''
