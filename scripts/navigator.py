@@ -26,7 +26,7 @@ START_POS_THRESH = 0.2
 # thereshold in theta to start moving forward when path following
 THETA_START_THRESH = 0.09
 # P gain on orientation before start
-THETA_START_P = 0.2
+THETA_START_P = 0.4
 
 # maximum velocity
 V_MAX = .2
@@ -95,7 +95,7 @@ class Navigator:
         self.x_g = data.x
         self.y_g = data.y
         self.theta_g = data.theta
-        rospy.loginfo("Navigator: Received command")
+        rospy.loginfo("Navigator: Received command, (%3.2f, %3.2f, %3.2f)", self.x_g, self.y_g, self.theta_g)
         self.run_navigator()
 
     def map_md_callback(self, msg):

@@ -67,8 +67,13 @@ class FoodFetcher:
                     locOfFd = self.food_dictionary[fd][0]
                     self.food_waypoints.append(locOfFd)
                 else:
-                    print("Did not detect the requested item ",fd, ":(")
-            print("Requested food are at coordinates ",self.food_waypoints)
+                    print("Did not detect the requested item ", fd, ":(")
+
+            # BREAKING CHANGE, ADDING HOME AFTER FOOD LIST
+            self.food_waypoints.append([0.0, 0.0, 0.0])
+            # END OF BREAKING CHANGE
+
+            print("Requested food are at coordinates ", self.food_waypoints)
         
 
     def food_detected_callback(self, msg):
@@ -151,7 +156,7 @@ class FoodFetcher:
                 pose_waypoint_msg.x = fd_target[0]
                 pose_waypoint_msg.y = fd_target[1]
                 pose_waypoint_msg.theta = fd_target[2]
-                rospy.loginfo("Publishing waypoint")
+                rospy.loginfo("FoodFetcher: Publishing waypoint")
                 self.food_waypoint_publisher.publish(pose_waypoint_msg)
 
                 self.get_current_location()
@@ -160,9 +165,8 @@ class FoodFetcher:
                 fd_y = fd_target[1]
                 fd_theta = fd_target[2]
 
-                if la.norm([self.x - fd_x, self.y - fd_y]) < 0.10:
-                    rospy.loginfo('Arrived at food waypoint')
-                    rospy.loginfo("Publishing new waypoint")
+                if la.norm([self.x - fd_x, self.y - fd_y]) < 0.15:
+                    rospy.loginfo('FoodFetcher: Arrived at food waypoint')
                     self.food_waypoints.remove(fd_target)
             rate.sleep()
 

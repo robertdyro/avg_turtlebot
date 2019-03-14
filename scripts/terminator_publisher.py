@@ -17,7 +17,6 @@ class TerminationRequestPublisher:
     def publish_request(self):
         #publish the request t times, once every s seconds
         self.request_termination.publish(self.request)
-        self.request_termination2.publish(self.request)
   
     def loop(self):
         """The main loop of the script. The script will ask for food items to add to the 

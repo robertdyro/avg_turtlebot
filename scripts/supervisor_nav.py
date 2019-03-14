@@ -67,7 +67,7 @@ class Supervisor:
         # command pose for controller
         self.pose_goal_publisher = rospy.Publisher('/cmd_pose', Pose2D, queue_size=10)
         # nav pose for controller
-        self.nav_goal_publisher = rospy.Publisher('/cmd_nav', Pose2D, queue_size=2)
+        self.nav_goal_publisher = rospy.Publisher('/cmd_nav', Pose2D, queue_size=10)
         # command vel (used for idling)
         self.cmd_vel_publisher = rospy.Publisher('/cmd_vel', Twist, queue_size=10)
 
@@ -220,8 +220,7 @@ class Supervisor:
         nav_g_msg.x = self.x_g
         nav_g_msg.y = self.y_g
         nav_g_msg.theta = self.theta_g
-        #rospy.loginfo("Supervisor_nav: publishing from nav_to_pose, mode: %s", self.mode)
-
+        rospy.loginfo("Supervisor_nav: publishing (%3.2f, %3.2f, %3.2f)", self.x_g, self.y_g, self.theta_g)
         self.nav_goal_publisher.publish(nav_g_msg)
 
     def stay_idle(self):
