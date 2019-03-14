@@ -35,7 +35,7 @@ class FoodFetcher:
         # self.food_dictionary = {'pizza': [[12.0, 2.0, 3.0], [2.0, 0.0, 1.0]], 'apple': [[1.0, 2.4, 0.3], [1.0, 2.4, 0.3]], 'banana': [[12.0, 2.0, 3.0]]}
         self.food_dictionary = {}
         self.food_waypoints = []
-        self.food_dictionary["home"] = [(0.3, -1.7, 1.57)]
+        self.food_dictionary["home"] = [(0.3, -1.65, 1.57)]
 
 
         # current state
@@ -82,7 +82,7 @@ class FoodFetcher:
         self.food_dictionary.update(json.loads(msg.data))
 
         # BREAKING CHANGE, ADDING HOME AFTER FOOD LIST
-        self.food_dictionary["home"] = [(0.3, -1.7, 1.57)]
+        self.food_dictionary["home"] = [(0.3, -1.65, 1.57)]
         # END OF BREAKING CHANGE
 
         #print("Dictionary of food just detected is ",self.food_dictionary)
